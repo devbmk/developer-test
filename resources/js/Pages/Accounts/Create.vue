@@ -1,8 +1,28 @@
 <script setup>
 import BreezeAuthenticatedLayout from '@/Layouts/Authenticated.vue'
-import {Link, Head} from '@inertiajs/vue3'
+import {Link, Head, useForm} from '@inertiajs/vue3'
 
-const form = '' // placeholder value
+defineProps({
+    users: Array,
+});
+
+const form = useForm({
+    name: "",
+    address: "",
+    town_city: "",
+    country: "",
+    post_code: "",
+    phone: "",
+    owner_id: "",
+})
+
+const submit = () => {
+    try {
+        form.post(route("accounts.store"));
+    } catch (error) {
+        console.error(error);
+    }
+};
 </script>
 
 <template>
@@ -19,7 +39,7 @@ const form = '' // placeholder value
                         </ul>
                     </div>
                     <div class="mt-5 md:mt-0 md:col-span-2">
-                        <form>
+                        <form @submit.prevent="submit">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-3">
                                     <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
@@ -27,6 +47,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="name"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.name"
                                     >
                                 </div>
 
@@ -35,8 +56,16 @@ const form = '' // placeholder value
                                     <select
                                         id="owner"
                                         class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        v-model="form.owner_id"
                                     >
-                                        <option></option>
+                                        <option>Select Owner</option>
+                                        <option
+                                            v-for="user in users"
+                                            :key="user.id"
+                                            :value="user.id"
+                                        >
+                                            {{ user.name }}
+                                        </option>
                                     </select>
                                 </div>
 
@@ -46,6 +75,7 @@ const form = '' // placeholder value
                                         type="tel"
                                         id="phone"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.phone"
                                     >
                                 </div>
 
@@ -55,6 +85,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="country"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.country"
                                     >
                                 </div>
 
@@ -64,6 +95,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="address"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.address"
                                     >
                                 </div>
 
@@ -73,6 +105,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="city"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.town_city"
                                     >
                                 </div>
 
@@ -82,12 +115,23 @@ const form = '' // placeholder value
                                         type="text"
                                         id="post-code"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.post_code"
                                     >
                                 </div>
                             </div>
                             <div class="flex justify-end mt-6">
-                                <Link :href="route('accounts.index')" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</Link>
-                                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create</button>
+                                <Link
+                                    :href="route('accounts.index')"
+                                    class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Cancel
+                                </Link>
+                                <button
+                                    type="submit"
+                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Create
+                                </button>
                             </div>
                         </form>
                     </div>

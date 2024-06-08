@@ -1,8 +1,44 @@
 <script setup>
 import BreezeAuthenticatedLayout from '@/Layouts/Authenticated.vue'
-import {Link, Head} from '@inertiajs/vue3'
+import {Link, Head, useForm} from '@inertiajs/vue3'
 
-const form = '' // placeholder value
+const props = defineProps({
+    users: Array,
+    account: Object,
+});
+
+const form = useForm({
+    name: props.account.name,
+    owner_id: props.account.owner_id,
+    address: props.account.address,
+    town_city: props.account.town_city,
+    country: props.account.country,
+    post_code: props.account.post_code,
+    phone: props.account.phone,
+});
+
+const update = async () => {
+    try {
+        await form.put(
+            route("accounts.update", { account: props.account.id })
+        );
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const remove = async () => {
+    try {
+        const isConfirmed = confirm("Are you sure you want to delete this account?");
+        if (isConfirmed) {
+            await form.delete(
+                route("accounts.destroy", { account: props.account.id })
+            );
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 </script>
 
 <template>
@@ -19,7 +55,7 @@ const form = '' // placeholder value
                         </ul>
                     </div>
                     <div class="mt-5 md:mt-0 md:col-span-2">
-                        <form>
+                        <form @submit.prevent="update">
                             <div class="grid grid-cols-6 gap-6">
                                 <div class="col-span-6 sm:col-span-3">
                                     <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
@@ -27,6 +63,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="name"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.name"
                                     >
                                 </div>
 
@@ -35,8 +72,15 @@ const form = '' // placeholder value
                                     <select
                                         id="owner"
                                         class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        v-model="form.owner_id"
                                     >
-                                        <option></option>
+                                        <option
+                                            v-for="user in users"
+                                            :key="user.id"
+                                            :value="user.id"
+                                        >
+                                            {{ user.name }}
+                                        </option>
                                     </select>
                                 </div>
 
@@ -46,6 +90,7 @@ const form = '' // placeholder value
                                         type="tel"
                                         id="phone"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.phone"
                                     >
                                 </div>
 
@@ -55,6 +100,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="country"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.country"
                                     >
                                 </div>
 
@@ -64,6 +110,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="address"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.address"
                                     >
                                 </div>
 
@@ -73,6 +120,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="city"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.town_city"
                                     >
                                 </div>
 
@@ -82,6 +130,7 @@ const form = '' // placeholder value
                                         type="text"
                                         id="post-code"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        v-model="form.post_code"
                                     >
                                 </div>
                             </div>
@@ -89,12 +138,18 @@ const form = '' // placeholder value
                                 <button
                                     type="button"
                                     class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                    @click="remove"
                                 >
                                     Delete
                                 </button>
                                 <div>
                                     <Link :href="route('accounts.index')" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Cancel</Link>
-                                    <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+                                    <button
+                                        type="submit"
+                                        class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    >
+                                        Save
+                                    </button>
                                 </div>
                             </div>
                         </form>
